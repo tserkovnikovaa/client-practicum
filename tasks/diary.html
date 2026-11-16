@@ -139,7 +139,7 @@ input[type=range]{accent-color:#6256b5!important}
         </div>
       </section>
       <details class="extra" id="extra">
-        <summary>Дополнительно: мысли, ощущения и действия (необязательно)</summary>
+        <summary>Дополнительно: мысли, ощущения и действия</summary>
         <label class="label" for="thought">Какая мысль или образ возникли?</label>
         <textarea class="field" id="thought" placeholder="Что пришло в голову?"></textarea>
         <label class="label" for="body">Как это ощущалось в теле?</label>
@@ -157,7 +157,7 @@ input[type=range]{accent-color:#6256b5!important}
     </section>
     <footer class="bottom">
       <div><h3>Дневник за неделю</h3><p id="progress">Пока нет записей</p><p>Сохраните PDF, чтобы поделиться записями с психологом.</p></div>
-      <div class="buttons"><button class="btn secondary" id="new" type="button">Новая неделя</button><button class="btn" id="pdf" type="button">Сохранить в PDF</button></div>
+      <div class="buttons"><button class="btn secondary" id="new" type="button">Новая неделя</button><button class="btn" id="pdf" type="button">Сохранить всю неделю в PDF</button></div>
     </footer>
     <div class="p-telegram">Если возникли вопросы по заданию, напишите мне в <a href="https://t.me/tser_a" target="_blank" rel="noopener">Telegram ↗</a> или <a href="https://vk.com/id588880" target="_blank" rel="noopener">ВКонтакте ↗</a>.</div><p class="privacy" id="privacy">Данные не отправляются на сервер и сохраняются только в браузере этого устройства, если браузер разрешает локальное хранение. В общем профиле браузера записи могут быть доступны другим пользователям. Для отправки психологу сохраните PDF.</p>
   </div>
@@ -301,11 +301,15 @@ input[type=range]{accent-color:#6256b5!important}
   function buildPrint(){
     const target=$('print');target.replaceChildren();
     const head=make('header','printhead');
-    head.append(make('h1','','Дневник эмоций'),make('p','','Наблюдения за неделю · '+days.filter(isFilled).length+' из 7 дней'));
+    head.append(make('h1','','Дневник эмоций · 7 дней'),make('p','','Заполнено '+days.filter(isFilled).length+' из 7 дней · сводный дневник для следующей консультации'));
     target.append(head);
     days.forEach((d,index)=>{
-      if(!isFilled(d))return;
       const section=make('section','printday');section.append(make('h2','',DAYS[index]));
+      if(!isFilled(d)){
+        section.append(make('p','printempty','Записей за этот день нет.'));
+        target.append(section);
+        return;
+      }
       printLine(section,'Ситуация',d.event);
       const names=PAIRS.flat().filter(name=>Object.prototype.hasOwnProperty.call(d.picked||{},name));
       if(names.length)printLine(section,'Эмоции и интенсивность',names.map(name=>name+' — '+d.picked[name]+'/10').join('; '));
@@ -315,10 +319,33 @@ input[type=range]{accent-color:#6256b5!important}
       if(d.aftercheck)printLine(section,'Интенсивность после',String(d.after??5)+'/10');
       target.append(section);
     });
-    if(!days.some(isFilled))target.append(make('p','printempty','Записей пока нет.'));
+    // Все семь дней включены в сводный документ, даже если часть дней не заполнена.
   }
   $('pdf').addEventListener('click',()=>{
-    buildPrint();status('В окне печати выберите «Сохранить как PDF».');window.print();
+    buildPrint();
+    // Формируем независимый печатный документ за все 7 дней,
+    // не зависящий от открытой вкладки понедельника/вторника и т. д.
+    const content=$('print').innerHTML;
+    const printWindow=window.open('','_blank');
+    if(!printWindow){
+      status('В окне печати выберите «Сохранить как PDF» (все 7 дней).');
+      window.print();
+      return;
+    }
+    const printHTML='<!doctype html><html lang="ru"><head><meta charset="utf-8">'+
+      '<meta name="viewport" content="width=device-width,initial-scale=1">'+
+      '<title>Дневник эмоций — вся неделя</title>'+
+      '<style>@page{size:A4;margin:16mm}*{box-sizing:border-box}body{margin:0;background:white;color:#292538;font:11pt/1.5 Arial,sans-serif}'+
+      'h1{font-size:23pt;margin:0 0 6px;color:#3b2e7f}.printhead{border-bottom:2px solid #7366bb;padding-bottom:12px;margin-bottom:15px}'+
+      '.printhead p{font-size:10pt;color:#726b7e;margin:0}.printday{padding:13px 0;border-bottom:1px solid #ddd9e8;break-inside:avoid;page-break-inside:avoid}'+
+      '.printday h2{font-size:14pt;color:#50439b;margin:0 0 8px}.printline{white-space:pre-wrap;overflow-wrap:anywhere;margin:5px 0;font-size:10pt}'+
+      '.printempty{font-size:10pt;color:#928b99}</style></head><body>'+content+'</body></html>';
+    printWindow.document.open();
+    printWindow.document.write(printHTML);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.setTimeout(()=>printWindow.print(),400);
+    status('Открыт сводный документ за все 7 дней. Выберите «Сохранить как PDF».');
   });
   window.addEventListener('beforeprint',buildPrint);
   render();
