@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Расширение моей территории — практика между встречами</title>
+<meta name="description" content="Интерактивное упражнение: зона комфорта, зона обучения, зона перегрузки, опоры и первые шаги к цели.">
+<style>
+:root{
+  --bg:#f4f0e8;--card:#fffdf9;--text:#33362f;--muted:#74766e;--line:#ddd6ca;
+  --olive:#7d8f72;--olive-soft:#dfe9d9;--lav:#948cc7;--lav-soft:#e9e5f6;
+  --peach:#ead9cf;--peach-soft:#f3e7df;--soft:#f6f2eb;--shadow:0 8px 24px rgba(66,58,46,.06)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+a{color:inherit}
+.wrap{max-width:960px;margin:auto;padding:20px 16px 56px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;margin:14px 0;box-shadow:var(--shadow)}
+.hero{background:linear-gradient(135deg,#f7f4ed,#f0ecf8)}
+.kicker{font-size:11px;letter-spacing:1.8px;text-transform:uppercase;font-weight:800;color:#68745e}
+h1,h2{font-family:Georgia,serif;font-weight:500}
+h1{font-size:39px;line-height:1.1;margin:7px 0 10px}
+h2{font-size:26px;margin:0}
+h3{font-size:15px;margin:0 0 6px}
+p{margin:8px 0}
+.lead{font-size:17px;max-width:760px}
+.note{margin-top:16px;padding:13px 15px;border-left:4px solid var(--olive);background:#fbfaf7;border-radius:10px}
+.small{font-size:12px;color:var(--muted)}
+.toplink{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:13px;color:#67715e;margin-bottom:10px}
+.zonecards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.zonecard{padding:14px;border-radius:10px;border:1px solid rgba(70,60,50,.06)}
+.zonecard:nth-child(1){background:var(--olive-soft)}
+.zonecard:nth-child(2){background:var(--lav-soft)}
+.zonecard:nth-child(3){background:var(--peach-soft)}
+details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;font-weight:700;color:#53604c}
+.stephead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--olive);color:white;font-weight:800;font-size:13px;flex:0 0 auto}
+.help{color:var(--muted);font-size:13px;margin:4px 0 12px}
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.75fr);gap:16px}
+.mapwrap{border:1px solid var(--line);border-radius:14px;background:#fbfaf7;padding:14px;min-height:510px}
+.map{position:relative;width:min(100%,470px);aspect-ratio:1/1;margin:5px auto 0;touch-action:none}
+.ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;display:flex;justify-content:center;align-items:flex-start;color:#565851;font-size:11px;padding-top:10px;text-align:center}
+.ring.panic{width:92%;height:92%;background:var(--peach-soft);border:1px solid #dec9bb}
+.ring.learn{width:69%;height:69%;background:var(--lav-soft);border:1px solid #d1caea}
+.ring.comfort{width:45%;height:45%;background:var(--olive-soft);border:1px solid #c7d6c0}
+.ring.learn{padding-top:8px}.ring.comfort{padding-top:8px}
+.marker{position:absolute;transform:translate(-50%,-50%);border-radius:50%;width:38px;height:38px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;box-shadow:0 4px 12px rgba(0,0,0,.15);cursor:grab;user-select:none;z-index:10;text-align:center;padding:2px}
+.marker:active{cursor:grabbing}
+.marker.me{background:#53694c}
+.marker.goal{background:#867db9}
+.marker.custom{background:#a38b75}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.sidebox{background:#f7f3ec;border:1px solid var(--line);border-radius:12px;padding:14px}
+label{display:block;font-size:13px;font-weight:750;margin:13px 0 6px}
+input[type=text],textarea{width:100%;border:1px solid #d5cec2;border-radius:9px;padding:10px 11px;font:inherit;background:white;color:var(--text);outline:none}
+input[type=text]:focus,textarea:focus{border-color:#9cab91;box-shadow:0 0 0 3px #edf2e8}
+textarea{min-height:82px;resize:vertical}
+.addrow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.btn{border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:750;cursor:pointer}
+.btn.primary{background:var(--olive);color:white}
+.btn.secondary{background:var(--lav-soft);color:#534b78}
+.btn.ghost{background:#eee9e1;color:#5f605a}
+.statusbox{margin-top:14px;padding:11px 12px;border-radius:9px;background:#edf2e9;color:#53634d;font-size:12px}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.steps{display:flex;flex-direction:column;gap:10px}
+.stepcard{border:1px solid var(--line);border-radius:11px;padding:12px;background:#fcfbf8;position:relative}
+.stepcard .remove{position:absolute;right:9px;top:7px;border:0;background:transparent;color:#8f8174;cursor:pointer}
+.rangehead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.badge{background:var(--lav-soft);padding:3px 8px;border-radius:999px;font-weight:800;font-size:12px}
+input[type=range]{width:100%;accent-color:var(--lav)}
+.scale{display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.chip{border:1px solid #d9d2c7;background:white;border-radius:999px;padding:7px 10px;cursor:pointer;font-size:12px}
+.chip.on{background:#edf2e9;border-color:#9eb094;color:#43563d;font-weight:750}
+.finalbox{background:#edf3e9;border-radius:11px;padding:14px}
+.quote{font:500 18px/1.45 Georgia,serif;color:#4d5d47;margin:12px 0 4px}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+#printView{display:none}
+@media(max-width:760px){
+  .zonecards,.mapgrid,.twocol{grid-template-columns:1fr}
+  h1{font-size:33px}
+  .mapwrap{min-height:auto}
+  .map{width:min(100%,420px)}
+}
+@media print{
+  @page{size:A4;margin:15mm}
+  body{background:#fff}
+  .screen{display:none!important}
+  #printView{display:block!important;color:#263226;font:11pt/1.45 Arial,sans-serif}
+  #printView h1{font:700 22pt/1.2 Arial,sans-serif;margin:0 0 8px}
+  #printView h2{font:700 14pt/1.2 Arial,sans-serif;margin:16px 0 6px}
+  #printView .pblock{border-bottom:1px solid #ddd;padding:8px 0;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap screen">
+  <a class="toplink" href="../index.html">← Вернуться к библиотеке упражнений</a>
+
+  <section class="panel hero">
+    <div class="kicker">Практика самоисследования</div>
+    <h1>Расширение моей территории</h1>
+    <p class="lead">Интерактивная карта, которая помогает увидеть границу привычного, расположить цель и простроить маршрут к ней через посильные шаги.</p>
+    <div class="note"><strong>Задача не в том, чтобы «вытолкнуть» себя из зоны комфорта.</strong> Важно найти следующий шаг, который уже немного непривычен, но все еще кажется выполнимым — особенно если добавить нужную опору.</div>
+    <p class="small">Ответы сохраняются только в браузере на этом устройстве и не отправляются на сайт.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Три зоны</h2>
+    <p class="help">Эта схема помогает отличить знакомое от развивающего вызова и перегрузки.</p>
+    <div class="zonecards">
+      <div class="zonecard"><h3>Зона комфорта</h3><p class="small">Знакомое и привычное. Здесь можно опираться на уже освоенные навыки, восстанавливаться и замечать свои ресурсы.</p></div>
+      <div class="zonecard"><h3>Зона обучения</h3><p class="small">Нового еще не умею полностью, но могу осваивать постепенно — самостоятельно или с поддержкой.</p></div>
+      <div class="zonecard"><h3>Зона перегрузки</h3><p class="small">Сейчас слишком сложно, тревожно или масштабно. Такой шаг лучше уменьшить, разбить на части или добавить больше поддержки.</p></div>
+    </div>
+    <details>
+      <summary>Почему здесь три зоны?</summary>
+      <p class="small">Трехзонная схема — современная модель обучения, а не модель Л. С. Выготского. При этом идея зоны обучения созвучна его понятию зоны ближайшего развития: часть нового становится доступной, когда задача немного сложнее того, что уже получается самостоятельно, и рядом есть подходящая поддержка.</p>
+    </details>
+  </section>
+
+  <section class="panel">
+    <div class="stephead"><div class="num">1</div><h2>Нарисуйте свою карту</h2></div>
+    <p class="help">Перетащите «Я» туда, где вы ощущаете себя сейчас. Затем разместите цель. При желании добавьте важные области жизни, занятия или людей.</p>
+    <div class="mapgrid">
+      <div class="mapwrap">
+        <div class="map" id="map">
+          <div class="ring panic">Зона перегрузки</div>
+          <div class="ring learn">Зона обучения</div>
+          <div class="ring comfort">Зона комфорта</div>
+          <div class="marker me" id="meMarker" data-kind="me">Я</div>
+          <div class="marker goal" id="goalMarker" data-kind="goal">Цель</div>
+        </div>
+        <div class="legend">
+          <span><i class="dot" style="background:#53694c"></i>Я сейчас</span>
+          <span><i class="dot" style="background:#867db9"></i>Цель</span>
+          <span><i class="dot" style="background:#a38b75"></i>Ваши точки</span>
+        </div>
+      </div>
+      <div class="sidebox">
+        <h3>Что разместить на карте?</h3>
+        <label for="goalText">Моя цель</label>
+        <input id="goalText" type="text" placeholder="Например: начать продавать свои изделия">
+        <p class="small">Маркер «Цель» можно перетащить — просто переместите его.</p>
+        <label for="pointText">Добавить важную точку</label>
+        <div class="addrow">
+          <input id="pointText" type="text" placeholder="Работа, танцы, друзья…">
+          <button class="btn primary" id="addPoint" type="button">Добавить</button>
+        </div>
+        <div id="pointsList" class="small" style="margin-top:10px">Пока дополнительных точек нет.</div>
+        <div class="statusbox" id="zoneStatus">Вы сейчас: зона комфорта. Цель: зона обучения.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="stephead"><div class="num">2</div><h2>Вспомните: что уже стало привычным?</h2></div>
+    <p class="help">Иногда мы забываем, что сегодняшнее «легко» когда-то тоже было новым.</p>
+    <div class="twocol">
+      <div>
+        <label for="familiar">Что сегодня находится в моей зоне комфорта, но когда-то было непривычным или трудным?</label>
+        <textarea id="familiar" placeholder="Навык, работа, хобби, общение, выступления, поездки…"></textarea>
+      </div>
+      <div>
+        <label for="helpedBefore">Что тогда помогло мне это освоить?</label>
+        <textarea id="helpedBefore" placeholder="Регулярность, интерес, поддержка, обучение, время, практика…"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="stephead"><div class="num">3</div><h2>Простройте маршрут</h2></div>
+    <p class="help"><strong>Спланируйте первые несколько шагов, которые приблизят вас к цели.</strong></p>
+    <div class="steps" id="steps"></div>
+    <button class="btn secondary" id="addStep" type="button" style="margin-top:10px">+ Добавить еще шаг</button>
+  </section>
+
+  <section class="panel">
+    <div class="stephead"><div class="num">4</div><h2>Добавьте опоры</h2></div>
+    <p class="help">Что поможет вам оставаться в зоне обучения, не проваливаясь в перегрузку?</p>
+    <div class="chips" id="chips"></div>
+    <label for="ownSupport">Что еще может стать моей опорой?</label>
+    <textarea id="ownSupport" placeholder="Люди, ресурсы, условия, напоминания, договоренности с собой…"></textarea>
+  </section>
+
+  <section class="panel">
+    <div class="stephead"><div class="num">5</div><h2>Выберите ближайший шаг</h2></div>
+    <p class="help">Хороший первый шаг немного расширяет привычное, но не требует от вас сразу стать экспертом.</p>
+    <div class="finalbox">
+      <label for="nextAction">Какой шаг я действительно готов(а) сделать первым?</label>
+      <textarea id="nextAction" placeholder="Один конкретный шаг"></textarea>
+      <label for="when">Когда или при каких условиях я его сделаю?</label>
+      <input id="when" type="text" placeholder="Например: в субботу утром; после работы; когда найду 30 минут">
+      <p class="quote">«Я могу постепенно расширять свою территорию, двигаясь шаг за шагом, без резкого перехода в зону перегрузки».</p>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="pdfBtn" type="button">Сохранить как PDF</button>
+      <button class="btn secondary" id="txtBtn" type="button">Сохранить как текст</button>
+      <button class="btn ghost" id="clearBtn" type="button">Очистить</button>
+    </div>
+    <p class="small">Для PDF откроется стандартное окно печати браузера — выберите «Сохранить как PDF».</p>
+  </section>
+</div>
+
+<section id="printView"></section>
+
+<script>
+(function(){
+  "use strict";
+  var KEY="comfort-zone-map-v1";
+  var supports=["Поддерживающий человек","Группа / сообщество","Информация / инструкция","Время без спешки","Навык / обучение","Маленький эксперимент","Прошлый успешный опыт"];
+  var state={
+    goalText:"",familiar:"",helpedBefore:"",ownSupport:"",nextAction:"",when:"",
+    selectedSupports:[],steps:[
+      {action:"",stress:4,support:""},
+      {action:"",stress:5,support:""},
+      {action:"",stress:6,support:""}
+    ],
+    markers:[
+      {id:"meMarker",kind:"me",label:"Я",x:42,y:55},
+      {id:"goalMarker",kind:"goal",label:"Цель",x:68,y:42}
+    ],
+    customCounter:0
+  };
+  try{
+    var saved=JSON.parse(localStorage.getItem(KEY)||"null");
+    if(saved&&typeof saved==="object") state=Object.assign(state,saved);
+  }catch(e){}
+
+  var map=document.getElementById("map");
+  var stepsBox=document.getElementById("steps");
+  var chipsBox=document.getElementById("chips");
+  var pointsList=document.getElementById("pointsList");
+
+  function save(){
+    localStorage.setItem(KEY,JSON.stringify(state));
+  }
+  function esc(s){
+    return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});
+  }
+  function getMarker(id){return state.markers.find(function(m){return m.id===id;});}
+  function zoneFor(x,y){
+    var dx=x-50,dy=y-50,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<=20.5)return "зона комфорта";
+    if(d<=31.5)return "зона обучения";
+    return "зона перегрузки";
+  }
+  function updateStatus(){
+    var me=getMarker("meMarker"),goal=getMarker("goalMarker");
+    document.getElementById("zoneStatus").textContent="Вы сейчас: "+zoneFor(me.x,me.y)+". Цель: "+zoneFor(goal.x,goal.y)+".";
+  }
+  function placeMarker(el,m){
+    el.style.left=m.x+"%";el.style.top=m.y+"%";
+    el.textContent=m.kind==="custom" ? (m.label.length>8?m.label.slice(0,7)+"…":m.label) : m.label;
+    el.title=m.label;
+  }
+  function bindDrag(el,m){
+    function move(ev){
+      var r=map.getBoundingClientRect();
+      var x=((ev.clientX-r.left)/r.width)*100;
+      var y=((ev.clientY-r.top)/r.height)*100;
+      x=Math.max(5,Math.min(95,x));y=Math.max(5,Math.min(95,y));
+      m.x=x;m.y=y;placeMarker(el,m);updateStatus();save();
+    }
+    el.addEventListener("pointerdown",function(ev){
+      el.setPointerCapture(ev.pointerId);move(ev);
+      function onMove(e){move(e);}
+      function onUp(e){el.releasePointerCapture(e.pointerId);el.removeEventListener("pointermove",onMove);el.removeEventListener("pointerup",onUp);}
+      el.addEventListener("pointermove",onMove);el.addEventListener("pointerup",onUp);
+    });
+  }
+  function renderMarkers(){
+    Array.from(map.querySelectorAll(".marker.custom")).forEach(function(x){x.remove();});
+    state.markers.forEach(function(m){
+      var el=document.getElementById(m.id);
+      if(!el){
+        el=document.createElement("div");el.id=m.id;el.className="marker custom";el.dataset.kind="custom";map.appendChild(el);
+      }
+      placeMarker(el,m);
+      if(!el.dataset.bound){bindDrag(el,m);el.dataset.bound="1";}
+    });
+    var customs=state.markers.filter(function(m){return m.kind==="custom";});
+    if(!customs.length) pointsList.textContent="Пока дополнительных точек нет.";
+    else{
+      pointsList.innerHTML=customs.map(function(m){
+        return '<div style="display:flex;justify-content:space-between;gap:8px;margin:5px 0"><span>'+esc(m.label)+'</span><button type="button" data-remove-point="'+esc(m.id)+'" style="border:0;background:transparent;color:#8b7767;cursor:pointer">×</button></div>';
+      }).join("");
+    }
+    updateStatus();
+  }
+
+  function stepHTML(s,i){
+    return '<div class="stepcard">'+
+      (state.steps.length>1?'<button class="remove" type="button" data-remove-step="'+i+'" aria-label="Удалить шаг">×</button>':'')+
+      '<h3>Шаг '+(i+1)+'</h3>'+
+      '<label>Что я сделаю?</label><input type="text" data-step-action="'+i+'" value="'+esc(s.action)+'" placeholder="Конкретное действие">'+
+      '<label>Насколько это непривычно / напряженно?</label>'+
+      '<div class="rangehead"><span class="small">0 — совсем привычно</span><span class="badge" id="badge_'+i+'">'+s.stress+'/10</span></div>'+
+      '<input type="range" min="0" max="10" value="'+s.stress+'" data-step-stress="'+i+'">'+
+      '<div class="scale"><span>0 — совсем привычно</span><span>10 — сейчас слишком много</span></div>'+
+      '<label>Что сделает этот шаг посильнее?</label><input type="text" data-step-support="'+i+'" value="'+esc(s.support)+'" placeholder="Поддержка, информация, уменьшение шага…">'+
+      '</div>';
+  }
+  function renderSteps(){
+    stepsBox.innerHTML=state.steps.map(stepHTML).join("");
+  }
+  function renderChips(){
+    chipsBox.innerHTML=supports.map(function(v){
+      return '<button type="button" class="chip '+(state.selectedSupports.indexOf(v)>=0?"on":"")+'" data-support="'+esc(v)+'">'+esc(v)+'</button>';
+    }).join("");
+  }
+
+  document.getElementById("goalText").value=state.goalText;
+  document.getElementById("familiar").value=state.familiar;
+  document.getElementById("helpedBefore").value=state.helpedBefore;
+  document.getElementById("ownSupport").value=state.ownSupport;
+  document.getElementById("nextAction").value=state.nextAction;
+  document.getElementById("when").value=state.when;
+
+  ["goalText","familiar","helpedBefore","ownSupport","nextAction","when"].forEach(function(id){
+    document.getElementById(id).addEventListener("input",function(e){
+      state[id]=e.target.value;
+      if(id==="goalText"){var g=getMarker("goalMarker");g.label=e.target.value.trim()||"Цель";renderMarkers();}
+      save();
+    });
+  });
+
+  document.getElementById("addPoint").addEventListener("click",function(){
+    var input=document.getElementById("pointText"),label=input.value.trim();
+    if(!label)return;
+    state.customCounter+=1;
+    state.markers.push({id:"custom_"+state.customCounter,kind:"custom",label:label,x:50+Math.random()*20-10,y:50+Math.random()*20-10});
+    input.value="";save();renderMarkers();
+  });
+  pointsList.addEventListener("click",function(e){
+    var id=e.target.getAttribute("data-remove-point");
+    if(!id)return;
+    state.markers=state.markers.filter(function(m){return m.id!==id;});save();renderMarkers();
+  });
+
+  stepsBox.addEventListener("input",function(e){
+    var i;
+    if(e.target.hasAttribute("data-step-action")){i=+e.target.getAttribute("data-step-action");state.steps[i].action=e.target.value;}
+    if(e.target.hasAttribute("data-step-support")){i=+e.target.getAttribute("data-step-support");state.steps[i].support=e.target.value;}
+    if(e.target.hasAttribute("data-step-stress")){
+      i=+e.target.getAttribute("data-step-stress");state.steps[i].stress=+e.target.value;
+      document.getElementById("badge_"+i).textContent=e.target.value+"/10";
+    }
+    save();
+  });
+  stepsBox.addEventListener("click",function(e){
+    var v=e.target.getAttribute("data-remove-step");
+    if(v===null)return;
+    state.steps.splice(+v,1);save();renderSteps();
+  });
+  document.getElementById("addStep").addEventListener("click",function(){
+    state.steps.push({action:"",stress:5,support:""});save();renderSteps();
+  });
+
+  chipsBox.addEventListener("click",function(e){
+    var v=e.target.getAttribute("data-support");if(!v)return;
+    var pos=state.selectedSupports.indexOf(v);
+    if(pos>=0)state.selectedSupports.splice(pos,1);else state.selectedSupports.push(v);
+    save();renderChips();
+  });
+
+  function buildPrint(){
+    var me=getMarker("meMarker"),goal=getMarker("goalMarker");
+    var h='<div style="max-width:760px;margin:auto"><h1>Расширение моей территории</h1>';
+    h+='<div class="pblock"><b>Где я сейчас:</b> '+esc(zoneFor(me.x,me.y))+'<br><b>Цель:</b> '+esc(state.goalText||goal.label)+' — '+esc(zoneFor(goal.x,goal.y))+'</div>';
+    h+='<div class="pblock"><h2>Что уже стало привычным</h2><b>Раньше было новым:</b><br>'+esc(state.familiar).replace(/\n/g,"<br>")+'<br><br><b>Что помогло:</b><br>'+esc(state.helpedBefore).replace(/\n/g,"<br>")+'</div>';
+    h+='<div class="pblock"><h2>Первые шаги</h2>';
+    state.steps.forEach(function(s,i){h+='<p><b>Шаг '+(i+1)+':</b> '+esc(s.action)+'<br>Напряжение: '+s.stress+'/10<br>Что поможет: '+esc(s.support)+'</p>';});
+    h+='</div><div class="pblock"><h2>Опоры</h2>'+esc(state.selectedSupports.join(", "))+'<br>'+esc(state.ownSupport).replace(/\n/g,"<br>")+'</div>';
+    h+='<div class="pblock"><h2>Ближайший шаг</h2><b>Сделаю:</b> '+esc(state.nextAction).replace(/\n/g,"<br>")+'<br><b>Когда:</b> '+esc(state.when)+'</div>';
+    h+='<p><i>Я могу постепенно расширять свою территорию, двигаясь шаг за шагом, без резкого перехода в зону перегрузки.</i></p></div>';
+    document.getElementById("printView").innerHTML=h;
+  }
+  document.getElementById("pdfBtn").addEventListener("click",function(){buildPrint();window.print();});
+  document.getElementById("txtBtn").addEventListener("click",function(){
+    var a=["РАСШИРЕНИЕ МОЕЙ ТЕРРИТОРИИ","",
+      "Цель: "+state.goalText,
+      "Что уже стало привычным: "+state.familiar,
+      "Что тогда помогло: "+state.helpedBefore,"","ПЕРВЫЕ ШАГИ"];
+    state.steps.forEach(function(s,i){a.push("Шаг "+(i+1)+": "+s.action+" | напряжение "+s.stress+"/10 | опора: "+s.support);});
+    a.push("","Опоры: "+state.selectedSupports.join(", "),"Дополнительно: "+state.ownSupport,"","Ближайший шаг: "+state.nextAction,"Когда: "+state.when);
+    var blob=new Blob([a.join("\n")],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),x=document.createElement("a");
+    x.href=url;x.download="Расширение_моей_территории.txt";x.click();URL.revokeObjectURL(url);
+  });
+  document.getElementById("clearBtn").addEventListener("click",function(){
+    if(!confirm("Очистить все ответы и карту?"))return;
+    localStorage.removeItem(KEY);location.reload();
+  });
+
+  var g=getMarker("goalMarker");g.label=state.goalText.trim()||"Цель";
+  renderMarkers();renderSteps();renderChips();save();
+})();
+</script>
+</body>
+</html>
