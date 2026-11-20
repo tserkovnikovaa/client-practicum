@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Тренажер ABCDEF — проверка убеждений</title>
+<meta name="description" content="Универсальный интерактивный тренажер для анализа ситуации, проверки убеждений и поиска более гибкого взгляда.">
+<style>
+:root{--bg:#f8f7f2;--card:#fffefa;--text:#27322e;--soft:#64736d;--accent:#53694c;--pale:#eef2e9;--line:#dedfd6;--warm:#f4efe6;--lav:#eeeaf8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}button,input,textarea{font:inherit}a{color:var(--accent)}
+.wrap{max-width:870px;margin:0 auto;padding:26px 18px 75px}.back{display:inline-block;margin-bottom:23px;text-decoration:none;color:var(--accent);font-size:14px;font-weight:650}
+.hero{padding:29px 32px;background:linear-gradient(115deg,#f0f2e9,#fbfaf5);border:1px solid var(--line);border-radius:21px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.13em;font-weight:800;color:var(--accent)}
+h1{font-size:clamp(29px,4.5vw,40px);letter-spacing:-.025em;line-height:1.14;margin:9px 0 14px}h2{font-size:22px;line-height:1.25;margin:0}h3{font-size:18px;margin:0 0 7px}p{margin:6px 0 10px}strong{font-weight:750}
+.muted{color:var(--soft)}.small{font-size:13px}.note{background:var(--pale);border-radius:11px;padding:13px 16px;margin:16px 0;font-size:14px}.note.warm{background:var(--warm)}.note.lav{background:var(--lav)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0 12px}
+.tab{display:flex;flex-direction:column;text-align:left;gap:2px;border-radius:13px;background:var(--card);border:1px solid var(--line);color:var(--text);padding:12px 15px;cursor:pointer;transition:background .15s,border-color .15s}.tab strong{font-size:15px}.tab span{color:var(--soft);font-size:12px}.tab[aria-selected=true]{background:var(--pale);border:2px solid var(--accent);padding:11px 14px}.tab:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #9eb593;outline-offset:2px}
+.case{display:none}.case.active{display:block}.panel{background:var(--card);border:1px solid var(--line);border-radius:17px;margin:14px 0;padding:23px 25px;box-shadow:0 5px 20px rgba(24,36,19,.025)}
+.head{display:flex;align-items:flex-start;gap:13px;margin:0 0 10px}.n{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--accent);color:white;display:grid;place-items:center;font-weight:800}.hint{font-size:13px;color:var(--soft);margin:3px 0 6px}
+.field{margin:15px 0}.field label{display:block;font-weight:700;font-size:14px;margin:0 0 6px}.field input[type=text],.field textarea{display:block;width:100%;border:1px solid #cdd3c9;border-radius:10px;background:white;padding:11px 12px;color:var(--text);font-size:15px;outline:0}.field textarea{min-height:79px;resize:vertical}
+.field textarea:focus,.field input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px #dce6d8}.field input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}.row{display:flex;align-items:center;gap:15px}.row input{flex:1}.score{min-width:114px;text-align:center;background:var(--pale);color:#354d35;padding:7px 10px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap}.two{display:grid;grid-template-columns:1fr 1fr;gap:13px}.line{border:0;border-top:1px solid var(--line);margin:18px 0}.tag{font-size:12px;font-weight:750;display:inline-block;color:var(--accent);background:var(--pale);border-radius:6px;padding:3px 8px;margin:2px 0 6px}
+.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}.btn{border:1px solid var(--accent);background:var(--accent);border-radius:10px;padding:10px 15px;font-size:14px;font-weight:750;color:white;cursor:pointer}.btn.secondary{background:white;color:var(--accent)}.btn.ghost{border-color:#cad0c6;background:transparent;color:#5b665d}.buttons .btn{flex:1 1 170px}
+.status{min-height:1.2em;color:var(--soft);font-size:12px}.bottom{margin-top:18px}.privacy{border-left:3px solid var(--accent);padding-left:13px;margin:20px 0;color:var(--soft);font-size:13px}.print-only{display:none}
+@media(max-width:680px){.wrap{padding:16px 12px 55px}.hero{padding:21px 17px}.panel{padding:19px 16px}.tabs{gap:6px}.tab{padding:11px 8px}.tab[aria-selected=true]{padding:10px 7px}.two{grid-template-columns:1fr}.row{gap:8px}.score{min-width:100px}.head{gap:9px}}
+@media print{@page{size:A4;margin:14mm}body{background:white;color:#253029;font:10.5pt/1.4 Arial,sans-serif}.wrap{max-width:none;padding:0}.no-print{display:none!important}.print-only{display:block}.print-only h1{font:700 22pt/1.2 Arial;margin:0 0 5px}.print-only h2{font:700 14pt/1.3 Arial;margin:20px 0 8px}.print-case{page-break-before:always}.print-case:first-of-type{page-break-before:auto}.print-line{padding:7px 0;border-bottom:1px solid #e3e3e3;break-inside:avoid;white-space:pre-wrap;overflow-wrap:anywhere}.print-label{font-size:9pt;color:#506250;font-weight:700}.print-value{margin-top:3px;min-height:10px}}
+</style>
+</head>
+<body>
+<div class="wrap no-print">
+<a class="back" href="../index.html">← Вернуться к библиотеке упражнений</a>
+<header class="hero">
+<div class="eyebrow">Практика между встречами · работа с мышлением</div>
+<h1>Тренажер ABCDEF<br>Проверка убеждений</h1>
+<p>Иногда ситуация вызывает сильные эмоции не только из-за происходящего, но и из-за наших мыслей, ожиданий и внутренних правил. Здесь можно рассмотреть конкретный эпизод с разных сторон и найти более гибкий способ реагировать.</p>
+<div class="note"><strong>Как работать.</strong> Выберите одну из трех ситуаций. Сначала кратко заполните ABC, затем переходите к проверке убеждения (D), новой формулировке (E) и действию (F). Можно начать с одной ситуации и вернуться к остальным позже. Если пока сложно подобрать контраргументы или новое убеждение, оставьте поле пустым — обсудим на встрече.</div>
+<p class="small muted">Пишите коротко, своими словами. Не нужно доказывать, что реальных трудностей нет. Если анализ усиливает напряжение или вы начинаете ходить по кругу в мыслях, можно остановиться.</p>
+</header>
+<nav class="tabs" id="tabs" aria-label="Выбор ситуации"></nav>
+<div id="cases"></div>
+<div class="panel bottom">
+<h2>Сохранение результатов</h2>
+<p class="hint">Ответы автоматически сохраняются только в браузере на этом устройстве. Вы можете продолжить позже. Для отправки специалисту сохраните PDF или текстовый файл. На сайт ответы не передаются.</p>
+<div class="buttons">
+<button type="button" class="btn" id="pdf">Сохранить как PDF</button>
+<button type="button" class="btn secondary" id="txt">Скачать ответы TXT</button>
+<button type="button" class="btn ghost" id="reset">Очистить все ситуации</button>
+</div>
+<p class="status" id="status" role="status"></p>
+</div>
+<p class="privacy"><strong>Конфиденциальность.</strong> Записи остаются на вашем устройстве в браузере. При использовании общего компьютера другие пользователи этого браузера могут увидеть записи. Для отправки выбирайте удобный приватный канал. Очистка данных браузера может удалить незагруженные записи.</p>
+</div>
+<section id="printView" class="print-only"></section>
+<script>
+(function(){
+"use strict";
+var KEY="client-practicum-abc-def-v1";
+var FIELDS=["situation","aspect","emotion","intensity","actions","thought","expectation","meaning","beliefBefore","forArgs","againstArgs","flexible","next","beliefAfter"];
+var LABELS={
+situation:"Ситуация: что, где и когда произошло?",
+aspect:"А — что больше всего задело?",
+emotion:"В — эмоции",
+intensity:"В — сила эмоций",
+actions:"В — что сделали или хотели сделать?",
+thought:"С — какие мысли возникли?",
+expectation:"Как должно или не должно быть?",
+meaning:"Что означает для меня, если это не так?",
+beliefBefore:"Убежденность в исходном требовании — до",
+forArgs:"D — аргументы «за» требование",
+againstArgs:"D — аргументы «против» обязательности требования",
+flexible:"E — более гибкое убеждение",
+next:"F — следующий шаг",
+beliefAfter:"Убежденность в исходном требовании — после"
+};
+function blank(){var o={};FIELDS.forEach(function(k){o[k]=(k==="intensity"||k==="beliefBefore"||k==="beliefAfter")?null:"";});return o}
+var state=[blank(),blank(),blank()],active=0;
+try{var saved=JSON.parse(localStorage.getItem(KEY)||"null");if(Array.isArray(saved)&&saved.length===3){state=saved.map(function(x){return Object.assign(blank(),x||{})})}}catch(e){}
+function esc(v){return String(v===null||v===undefined?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function field(i,key,label,hint,ph,rows){return '<div class="field"><label for="f'+i+'_'+key+'">'+label+'</label>'+(hint?'<div class="hint">'+hint+'</div>':'')+'<textarea id="f'+i+'_'+key+'" data-i="'+i+'" data-f="'+key+'" rows="'+(rows||2)+'" placeholder="'+esc(ph||"")+'"></textarea></div>'}
+function range(i,key,label,max){return '<div class="field"><label for="f'+i+'_'+key+'">'+label+'</label><div class="row"><input type="range" id="f'+i+'_'+key+'" data-i="'+i+'" data-f="'+key+'" min="0" max="'+max+'" step="1" value="'+Math.round(max/2)+'"><span class="score" id="score_'+i+'_'+key+'">Не оценено</span></div></div>'}
+function panel(letter,title,subtitle,inside){return '<section class="panel"><div class="head"><div class="n">'+letter+'</div><div><h2>'+title+'</h2><p class="hint">'+subtitle+'</p></div></div>'+inside+'</section>'}
+function renderForm(i){
+var html='<article class="case'+(i===0?' active':'')+'" data-case="'+i+'" id="case'+i+'">';
+html+=panel("1","ABC — коротко о ситуации","Нужен один конкретный эпизод, без подробного пересказа.",field(i,"situation","Ситуация — что, где и когда произошло?","Только факты. Например: мне нужно было поручить человеку неприятную задачу.","",2)
++field(i,"aspect","А — какой аспект был самым неприятным?","Что именно вызвало напряжение, задело или встревожило?","",2)
++'<div class="two"><div>'+field(i,"emotion","В — что почувствовали?","Назовите эмоции.","Например: тревога, злость, вина",2)+'</div><div>'+range(i,"intensity","Сила самой выраженной эмоции",10)+'</div></div>'
++field(i,"actions","В — что сделали или хотели сделать?","","",2)
++field(i,"thought","С — о чем подумали?","Какая мысль связана с эмоциональной реакцией?","",2)
++field(i,"expectation","Как, по-вашему, должно или не должно быть?","Попробуйте сформулировать свое внутреннее правило. Например, с помощью слов «должен», «обязан», «нельзя».","",2)
++field(i,"meaning","Если это правило нарушается — что это для вас означает?","Например: это недопустимо, несправедливо, я не справлюсь. Только если такие значения действительно вам близки.","",2)
++range(i,"beliefBefore","Насколько вы верите в это требование сейчас?",100));
+html+=panel("D","D — проверяем убеждение","Проверяем прежде всего требование «как должно быть», а не отрицаем обстоятельства.",
+'<div class="note warm"><strong>Главный вопрос:</strong> действительно ли это должно быть именно так во всех случаях? Можно признавать свои ценности и реальные ограничения, но проверить, является ли правило обязательным и без исключений.</div>'
++field(i,"forArgs","Почему мне кажется, что это обязательно должно быть? Аргументы «за»","Какие факты, опыт или ценности поддерживают правило? Достаточно 1–3 конкретных аргументов.","1.\n2.\n3.",4)
++field(i,"againstArgs","Какие есть аргументы «против» обязательности правила?","Есть ли исключения, другие способы поступить, ситуации с иным исходом? Если аргументов пока нет — можно оставить пустым.","1.\n2.\n3.",4));
+html+=panel("E","E — формулируем более гибкое убеждение","Не нужно заставлять себя думать позитивно. Сохраняем важные ценности и учитываем реальность.",
+'<div class="note lav">Подсказка: <strong>«Мне хотелось бы ..., но в реальности бывает ... . Это неприятно, однако не обязательно означает ... . Я могу ...»</strong></div>'
++field(i,"flexible","Как теперь могла бы звучать моя мысль?","","",3)
++range(i,"beliefAfter","Насколько теперь верю в исходное требование?",100));
+html+=panel("F","F — что я могу сделать?","Небольшое действие, соответствующее более гибкому взгляду.",
+field(i,"next","Какой конкретный шаг я могу попробовать?","Что находится в моем влиянии? На какие свои навыки и ресурсы могу опереться?","",3));
+html+='<div class="buttons"><button type="button" class="btn secondary" data-previous="'+i+'">← Предыдущая</button><button type="button" class="btn" data-next="'+i+'">Следующая ситуация →</button></div></article>';
+return html;
+}
+document.getElementById("cases").innerHTML=[0,1,2].map(renderForm).join("");
+function progress(i){var present=["situation","aspect","emotion","actions","thought","expectation","meaning","forArgs","againstArgs","flexible","next"].filter(function(k){return String(state[i][k]||"").trim().length>0}).length;return present===0?"Пока не заполнена":present>=9?"Почти готова":"В процессе"}
+function drawTabs(){document.getElementById("tabs").innerHTML=[0,1,2].map(function(i){return '<button type="button" class="tab" data-tab="'+i+'" role="tab" aria-selected="'+(i===active?'true':'false')+'" aria-controls="case'+i+'"><strong>Ситуация '+(i+1)+'</strong><span>'+progress(i)+'</span></button>'}).join("")}
+function scores(){["intensity","beliefBefore","beliefAfter"].forEach(function(k){for(var i=0;i<3;i++){var v=state[i][k],node=document.getElementById("score_"+i+"_"+k);node.textContent=v===null||v===""?"Не оценено":v+(k==="intensity"?"/10":"%")}})}
+function store(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){document.getElementById("status").textContent="Не удалось сохранить в браузере. Скачайте TXT или PDF, чтобы не потерять ответы."}}
+document.querySelectorAll("[data-f]").forEach(function(el){var i=Number(el.getAttribute("data-i")),key=el.getAttribute("data-f");var v=state[i][key];el.value=v===null?(el.type==="range"?(key==="intensity"?"5":"50"):""):v;el.addEventListener("input",function(){state[i][key]=el.type==="range"?Number(el.value):el.value;store();scores();drawTabs();});});
+function show(i){active=Math.max(0,Math.min(2,i));document.querySelectorAll(".case").forEach(function(p){p.classList.toggle("active",Number(p.getAttribute("data-case"))===active)});drawTabs();document.getElementById("tabs").scrollIntoView({behavior:"smooth",block:"start"})}
+document.getElementById("tabs").addEventListener("click",function(e){var b=e.target.closest("[data-tab]");if(b)show(Number(b.getAttribute("data-tab")))});
+document.getElementById("cases").addEventListener("click",function(e){var b=e.target.closest("[data-next],[data-previous]");if(!b)return;if(b.hasAttribute("data-next"))show(Math.min(2,Number(b.getAttribute("data-next"))+1));else show(Math.max(0,Number(b.getAttribute("data-previous"))-1));});
+document.querySelectorAll("[data-previous='0'],[data-next='2']").forEach(function(e){e.style.display="none"});
+function nonempty(o){return Object.keys(o).some(function(k){return o[k]!==null&&String(o[k]).trim()!==""})}
+function addLine(parent,key,value){var div=document.createElement("div");div.className="print-line";var lab=document.createElement("div");lab.className="print-label";lab.textContent=LABELS[key];var val=document.createElement("div");val.className="print-value";val.textContent=value===null||value===""?"—":String(value)+(key==="intensity"?"/10":(key==="beliefBefore"||key==="beliefAfter")?"%":"");div.appendChild(lab);div.appendChild(val);parent.appendChild(div)}
+function buildPrint(){var root=document.getElementById("printView");root.innerHTML="";var h=document.createElement("h1");h.textContent="Тренажер ABCDEF — проверка убеждений";root.appendChild(h);var count=0;state.forEach(function(o,i){if(!nonempty(o))return;count++;var section=document.createElement("section");section.className="print-case";var heading=document.createElement("h2");heading.textContent="Ситуация "+(i+1);section.appendChild(heading);FIELDS.forEach(function(k){addLine(section,k,o[k])});root.appendChild(section)});if(!count){var p=document.createElement("p");p.textContent="Ситуации пока не заполнены.";root.appendChild(p)}}
+document.getElementById("pdf").addEventListener("click",function(){buildPrint();window.print()});
+window.addEventListener("beforeprint",buildPrint);
+function download(name,txt){var blob=new Blob(["\uFEFF",txt],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},4000)}
+document.getElementById("txt").addEventListener("click",function(){var out=["Тренажер ABCDEF — проверка убеждений",""];state.forEach(function(o,i){if(!nonempty(o))return;out.push("СИТУАЦИЯ "+(i+1));FIELDS.forEach(function(k){var v=o[k];out.push(LABELS[k]+": "+(v===null||v===""?"—":String(v)+(k==="intensity"?"/10":(k==="beliefBefore"||k==="beliefAfter")?"%":"")))});out.push("")});download("Trenazher_ABCDEF_otvety.txt",out.join("\r\n"));document.getElementById("status").textContent="Текстовый файл сохранен. Его можно отправить специалисту."});
+document.getElementById("reset").addEventListener("click",function(){if(!confirm("Удалить ответы во всех трех ситуациях из этого браузера? Отменить действие будет нельзя."))return;state=[blank(),blank(),blank()];document.querySelectorAll("[data-f]").forEach(function(el){el.value=el.type==="range"?(el.getAttribute("data-f")==="intensity"?"5":"50"):""});store();scores();show(0);document.getElementById("status").textContent="Форма очищена."});
+scores();drawTabs();
+})();
+</script>
+</body>
+</html>
